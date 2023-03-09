@@ -1,0 +1,298 @@
+<!-- Font css: font-family: 'Libre Baskerville', serif;-->
+
+
+
+<!DOCTYPE html>
+<html>
+    <!--Font api-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap" rel="stylesheet">
+
+    <style>
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 75%;
+        }
+
+        a:link{
+            color:black
+        }
+
+        a:visited{
+            color:black
+        }
+
+        a:hover{
+            color:black
+        }
+
+        a:active{
+            color:black
+        }
+
+
+
+    </style>
+
+
+    <head>
+        <title>SenFlow</title>
+        <link href="images/icon.png">
+
+        <a href="index.html"><img class="center" src="images/logo.png" alt="SenFlow logo"></a>
+    </head>
+
+
+    <body 
+
+    style="background-color: rgb(255, 240, 227);">
+
+    
+    <h3 class="center" style="font-family: 'Libre Baskerville', serif; font-size: 18px; text-indent: 52px;">   Have you ever read a sentence that sounds like this sentence? Do you grimace at how often these sentences contain the word sentence? Then this repitition-detection tool is perfect for you!</h3>
+
+    <input class="center" style="width: 20%; text-align: center;" type="text" id="input" placeholder="Your text here!">
+
+        <br>
+        <img class="center" style="width: 20%" src="images/submit.jpg" alt="Submit button" id="submit">
+        <br>
+        <img class="center" style="width: 20%" src="images/reset.jpg" alt="Reset button" id="reset">
+
+        <p id="output_text" class="center" style="font-family: 'Libre Baskerville', serif;"></p>
+
+
+
+
+        <script>
+            var sub = document.getElementById("submit");
+            
+            sub.addEventListener('mouseover', subOver);
+            sub.addEventListener('mouseout', subOut);
+            sub.addEventListener('click', subClick);
+            
+            function subOver(){
+                document.getElementById("submit").src="images/submithover.jpg";
+            }
+            function subOut(){
+                document.getElementById("submit").src="images/submit.jpg";
+            }
+            function subClick(){
+                document.getElementById("submit").src="images/submitpressed.jpg";
+                setTimeout(() => {document.getElementById("submit").src="images/submit.jpg";}, 250)
+                proccesData();
+
+            }
+
+
+        </script>
+
+        <script>
+            var res = document.getElementById("reset");
+            
+            res.addEventListener('mouseover', subOver);
+            res.addEventListener('mouseout', subOut);
+            res.addEventListener('click', resClick);
+            
+            function subOver(){
+                document.getElementById("reset").src="images/resethover.jpg";
+            }
+            function subOut(){
+                document.getElementById("reset").src="images/reset.jpg";
+            }
+            function resClick(){
+                document.getElementById("reset").src="images/resetpressed.jpg";
+                setTimeout(() => {document.getElementById("reset").src="images/reset.jpg";}, 250);
+                document.getElementById('input').value = "";
+                document.getElementById('output_text').innerHTML = "";
+            }
+
+        </script>
+
+        <script>
+
+            function proccesData(){
+            
+            //these characters are not considered to be apart of words
+            //they will not be highlighed, and they will signify the end of a word
+            //in a future version the user will be able to modify this value 
+            var break_characters = [",", '"', "[", "]", "{", "}", "(", ")", ".", "?", "!", " ", ""];
+            //supported list of special characters
+            
+            
+            var input_value = document.getElementById('input').value;
+            //seperation of puntuation/whitespace and words
+            var parsed_list = [];
+            var upper_parsed_list = [];
+            //"ind":where the key falls on parsed_list, "num":word count value when it was parsed, "amount":amount of that word in text
+            var word_dict = {};
+            //keeps track of the # of words parsed (EXCLUDES punctuation)
+            var word_cout = 0;
+            //word being parsed
+            var current_parse = "";
+            
+            var push_next = false;
+            var next = "";
+            
+            
+            
+            //input parser
+            while (true){
+                
+                //stop if done
+                if (input_value === ""){
+                break;
+                }
+                current_parse = "";
+                push_next = false;
+                
+                //word parser
+                while (true){
+                if (input_value.length === 0){
+                    break;
+                }
+                
+                //newline removal, append <br> instead of \n
+                if (input_value.length > 1){
+                    if (input_value[0] + input_value[1] === "\n"){
+                    next = "<br>";
+                    push_next = true;
+                    
+                    input_value = input_value.slice(2);
+                    break;
+                    }
+                }
+                
+                //check break characters
+                if (break_characters.includes(input_value[0])){
+                    next = input_value[0];
+                    push_next = true;
+                    
+                    input_value = input_value.slice(1);
+                    break;
+                }
+                
+                current_parse = current_parse + input_value[0];
+                input_value = input_value.slice(1);
+                }
+
+                
+                //now we have a word in current_parse
+                //use of double punctuation can allow for an empty string to pass through
+
+                if (current_parse === ""){
+                if (push_next === true){
+                    parsed_list.push(next.toLowerCase());
+                    upper_parsed_list.push(next);
+                }
+                continue;
+                }
+                word_cout += 1
+                
+                if (Object.keys(word_dict).includes(current_parse) === false){
+                word_dict[current_parse.toLowerCase()] = {"num":[], "ind":[], "amount":0};
+                }
+                
+                word_dict[current_parse.toLowerCase()]["num"].push(word_cout);
+                word_dict[current_parse.toLowerCase()]["ind"].push(parsed_list.length);
+                word_dict[current_parse.toLowerCase()]["amount"]++;
+                
+                parsed_list.push(current_parse.toLowerCase());
+                upper_parsed_list.push(current_parse);
+                
+                if (push_next === true){
+                parsed_list.push(next.toLowerCase());
+                upper_parsed_list.push(next);
+                }
+            }
+            
+            //Now, we need to construct the new output 
+            var style_value = Array(parsed_list.length).fill("");
+            var selected_value;
+            var keys = Object.keys(word_dict);
+            var distance;
+            var style = ""
+            
+            for (var key_index=0; key_index < keys.length; key_index++){
+                selected_value = word_dict[keys[key_index]];
+                
+                
+                
+                if (selected_value["num"].length === 0 || selected_value["num"].length === 1){
+                continue;
+                }
+                
+                for (var word_index=0; word_index < selected_value["num"].length; word_index++){
+                //case last word
+                if (word_index === selected_value["num"].length-1){
+                    distance = selected_value["num"][word_index] - selected_value["num"][word_index-1] 
+                    //case first word
+                } else if (word_index === 0){
+                    distance = selected_value["num"][1]-selected_value["num"][0];
+                    
+                } else {
+                    distance = Math.min(selected_value["num"][word_index]-selected_value["num"][word_index-1], selected_value["num"][word_index+1]-selected_value["num"][word_index]);
+                }
+                
+                
+                //WE NOW SET A STYLE VALUE BASED OFF OF DISTANCE   
+                
+                style = "text-decoration: underline;"
+                
+                
+                if (distance > 30){
+                    style = "";
+                } else if (distance < 5){
+                    style += " text-decoration-color: rgb(155, 0, 0);";
+                } else if (distance < 10){
+                    style += " text-decoration-color: rgb(255, 0, 0);";
+                } else if (distance < 15){
+                    style += " text-decoration-color: rgb(255, 153, 153);";
+                } else if (distance < 31){
+                    style += " text-decoration-color: rgb(255, 204, 204);";
+                }
+                
+                
+                style_value[selected_value["ind"][word_index]] = style;
+                }
+            }
+            
+            //reconstruct with style!
+            var return_str = "";
+            var current_word;
+            var current_style;
+            
+            while (true){
+                if (parsed_list.length === 0){
+                break;
+                }
+
+                current_word = upper_parsed_list[0];
+                current_style = style_value[0];
+                
+                parsed_list = parsed_list.slice(1);
+                upper_parsed_list = upper_parsed_list.slice(1);
+                style_value = style_value.slice(1);
+                
+
+                if (current_style === ""){
+                return_str = return_str + '<span>' + current_word + '</span>';
+                } else {
+                return_str = return_str + '<a target="_blank" style="' + current_style + '" href="https://www.merriam-webster.com/thesaurus/' + current_word + '">' + current_word + "</a>"
+                }
+            }
+            document.getElementById("output_text").innerHTML = return_str;
+
+            }
+            
+            
+        </script>
+
+        </script>
+
+
+    </body>
+    
+    <footer></footer>
+</html>
