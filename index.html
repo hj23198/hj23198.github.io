@@ -190,7 +190,7 @@
                 }
                 word_cout += 1
                 
-                if (Object.keys(word_dict).includes(current_parse) === false){
+                if (Object.keys(word_dict).includes(current_parse.toLowerCase()) === false){
                 word_dict[current_parse.toLowerCase()] = {"num":[], "ind":[], "amount":0};
                 }
                 
