@@ -51,7 +51,7 @@
     style="background-color: rgb(255, 240, 227);">
 
     
-    <h3 class="center" style="font-family: 'Libre Baskerville', serif; font-size: 18px; text-indent: 52px;">   Have you ever read a sentence that sounds like this sentence? Do you grimace at how often these sentences contain the word sentence? Then this repetition detection tool is perfect for you!</h3>
+    <h3 id="output_text"  class="center" style="font-family: 'Libre Baskerville', serif; font-size: 18px; text-indent: 52px;">   Have you ever read a sentence that sounds like this sentence? Do you grimace at how often these sentences contain the word sentence? Then this repetition detection tool is perfect for you!</h3>
 
     <input class="center" style="width: 20%; text-align: center;" type="text" id="input" placeholder="Your text here!">
 
@@ -60,8 +60,7 @@
         <br>
         <img class="center" style="width: 20%" src="images/reset.jpg" alt="Reset button" id="reset">
 
-        <p id="output_text" class="center" style="font-family: 'Libre Baskerville', serif;"></p>
-
+     
 
 
 
@@ -105,7 +104,7 @@
                 document.getElementById("reset").src="images/resetpressed.jpg";
                 setTimeout(() => {document.getElementById("reset").src="images/reset.jpg";}, 250);
                 document.getElementById('input').value = "";
-                document.getElementById('output_text').innerHTML = "";
+                document.getElementById('output_text').innerHTML = "   Have you ever read a sentence that sounds like this sentence? Do you grimace at how often these sentences contain the word sentence? Then this repetition detection tool is perfect for you!";
             }
 
         </script>
